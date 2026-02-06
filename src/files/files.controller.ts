@@ -2,7 +2,6 @@ import {BadRequestException, Body, Controller, Post, UploadedFile, UseIntercepto
 import {FilesService} from "./files.service";
 import {InvitesService} from "../invites/invites.service";
 import {FileInterceptor} from "@nestjs/platform-express";
-import {ConfigService} from "@nestjs/config";
 import * as QRCode from 'qrcode';
 
 @Controller('files')
@@ -10,7 +9,6 @@ export class FilesController {
     constructor(
         private readonly filesService: FilesService,
         private readonly invitesService: InvitesService,
-        private configService: ConfigService,
     ) {}
 
     @Post('upload')
@@ -43,7 +41,7 @@ export class FilesController {
         );
 
         // Generate QR code
-        const frontendUrl = this.configService.get<string>('frontend.url');
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
         const viewUrl = `${frontendUrl}/view/${uploadResult.fileId}`;
         const qrCode = await QRCode.toDataURL(viewUrl);
 

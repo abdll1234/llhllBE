@@ -1,11 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {Logger, ValidationPipe} from "@nestjs/common";
-import {ConfigService} from "@nestjs/config";
+
+import * as dotenv from 'dotenv';
+dotenv.config({ path: 'env/.env' });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
   // Enable CORS
@@ -13,7 +14,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:4200',
       'https://*.vercel.app',
-      configService.get('frontend.url'),
+      process.env.FRONTEND_URL,
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
@@ -27,10 +28,10 @@ async function bootstrap() {
       }),
   );
 
-  const port = configService.get('PORT') || 3000;
+  const port = process.env.PORT || 3000;
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
-  logger.log(`📁 Frontend URL: ${configService.get('frontend.url')}`);
+  logger.log(`📁 Frontend URL: ${process.env.FRONTEND_URL}`);
 }
 bootstrap();

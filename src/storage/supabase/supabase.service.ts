@@ -1,16 +1,14 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {createClient, SupabaseClient} from "@supabase/supabase-js";
-import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class SupabaseService {
     private readonly logger = new Logger(SupabaseService.name);
     private supabase: SupabaseClient;
 
-    constructor(private configService: ConfigService) {  // ← ConfigService injizieren
-        // Aus ConfigService lesen
-        const supabaseUrl = this.configService.get<string>('supabase.url');
-        const supabaseKey = this.configService.get<string>('supabase.key');
+    constructor() {
+        const supabaseUrl = process.env.SUPABASE_URL;
+        const supabaseKey = process.env.SUPABASE_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
             throw new Error('Missing Supabase credentials');

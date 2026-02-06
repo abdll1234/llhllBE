@@ -1,12 +1,10 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {SupabaseService} from "../storage/supabase/supabase.service";
-import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class FilesService {
     constructor(
         private readonly supabaseService: SupabaseService,
-        private configService: ConfigService,
     ) {}
 
     async uploadFile(
@@ -15,25 +13,24 @@ export class FilesService {
         inviteCode?: string,
     ) {
         // Validate file type
-        const allowedTypes = this.configService.get<string[]>(
-            'upload.allowedMimeTypes',
-        );
-        if (typeof allowedTypes !== 'undefined') {
-            if (!allowedTypes.includes(file.mimetype)) {
-                throw new BadRequestException(
-                    `File type not allowed. Allowed: ${allowedTypes.join(', ')}`,
-                );
-            }
+        const allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'application/pdf',
+        ];
+        if (!allowedTypes.includes(file.mimetype)) {
+            throw new BadRequestException(
+                `File type not allowed. Allowed: ${allowedTypes.join(', ')}`,
+            );
         }
 
         // Validate file size
-        const maxSize = this.configService.get<number>('upload.maxSize');
-        if (typeof maxSize !== 'undefined'){
-            if (file.size > maxSize ) {
-                throw new BadRequestException(
-                    `File too large. Max size: ${maxSize / 1024 / 1024}MB`,
-                );
-            }
+        const maxSize = parseInt(process.env.MAX_FILE_SIZE!) || 50 * 1024 * 1024;
+        if (file.size > maxSize) {
+            throw new BadRequestException(
+                `File too large. Max size: ${maxSize / 1024 / 1024}MB`,
+            );
         }
 
         // Generate unique ID
