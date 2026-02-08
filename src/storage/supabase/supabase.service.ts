@@ -7,19 +7,38 @@ export class SupabaseService {
     private supabase: SupabaseClient;
 
     constructor() {
+        // FÜR RAILWAY: process.env verwenden (KEIN dotenv!)
         const supabaseUrl = process.env.SUPABASE_URL;
         const supabaseKey = process.env.SUPABASE_KEY;
 
+        // Debug logging für Railway
+        this.logger.log(`SUPABASE_URL: ${supabaseUrl ? 'SET' : 'NOT SET'}`);
+        this.logger.log(`SUPABASE_KEY: ${supabaseKey ? 'SET' : 'NOT SET'}`);
+
         if (!supabaseUrl || !supabaseKey) {
-            throw new Error('Missing Supabase credentials');
+            // BESSERE Fehlermeldung
+            this.logger.error('==========================================');
+            this.logger.error('MISSING SUPABASE CREDENTIALS IN RAILWAY');
+            this.logger.error('Check Railway Dashboard → Variables');
+            this.logger.error('Required: SUPABASE_URL, SUPABASE_KEY');
+            this.logger.error('==========================================');
+
+            // Versuche trotzdem zu starten (für Health Check)
+            // Aber setze dummy client
+            this.supabase = {} as SupabaseClient;
+            return;
         }
 
         this.supabase = createClient(supabaseUrl, supabaseKey);
-        this.logger.log('Supabase client initialized');
+        this.logger.log('✅ Supabase client initialized');
     }
 
 
     async uploadFile(file: Express.Multer.File): Promise<{ url: string; path: string }> {
+        if (!this.supabase || !this.supabase.storage) {
+            throw new Error('Supabase client not initialized. Check Railway Environment Variables.');
+        }
+
         try {
             const fileExt = file.originalname.split('.').pop();
             const fileName = `${Date.now()}-${Math.random()

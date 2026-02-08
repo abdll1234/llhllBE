@@ -3,10 +3,20 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHello(): { status: string; timestamp: string } {
+    return {
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get('health')
+  getHealth(): { status: string; message: string } {
+    return {
+      status: 'healthy',
+      message: 'Server is running',
+    };
   }
 }
