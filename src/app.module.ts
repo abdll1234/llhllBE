@@ -3,8 +3,10 @@ import { Module } from '@nestjs/common';
 import {seconds, ThrottlerModule} from '@nestjs/throttler';
 import {FilesModule} from "./files/files.module";
 import {InvitesModule} from "./invites/invites.module";
+import {AppController} from "./app.controller";
 
 @Module({
+  controllers: [AppController],
   imports: [
     ThrottlerModule.forRoot({
       throttlers: [
