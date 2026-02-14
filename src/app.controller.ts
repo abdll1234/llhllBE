@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getRoot() {
@@ -24,9 +25,5 @@ export class AppController {
       uptime: process.uptime(),
       timestamp: Date.now()
     };
-  }
-  @Get('/')
-  healthCheck() {
-    return { status: 'OK' };
   }
 }
