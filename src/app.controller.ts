@@ -5,18 +5,28 @@ import { AppService } from './app.service';
 export class AppController {
 
   @Get()
-  getHello(): { status: string; timestamp: string } {
+  getRoot() {
     return {
       status: 'OK',
+      service: 'llhll-backend',
       timestamp: new Date().toISOString(),
+      environment: {
+        supabase: process.env.SUPABASE_URL ? 'configured' : 'missing',
+        frontend: process.env.FRONTEND_URL || 'not set'
+      }
     };
   }
 
   @Get('health')
-  getHealth(): { status: string; message: string } {
+  getHealth() {
     return {
       status: 'healthy',
-      message: 'Server is running',
+      uptime: process.uptime(),
+      timestamp: Date.now()
     };
+  }
+  @Get('/')
+  healthCheck() {
+    return { status: 'OK' };
   }
 }
