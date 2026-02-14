@@ -1,44 +1,51 @@
-// main.ts - GANZ NEU
+// main.ts - KORRIGIERT
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
 
 async function bootstrap() {
-  const server = express();
+  const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
 
-  // Root route für Health Check
-  server.get('/', (req, res) => {
-    res.json({
-      status: 'OK',
-      service: 'llhll-backend',
-      timestamp: new Date().toISOString()
-    });
-  });
-
-  server.get('/health', (req, res) => {
-    res.json({ status: 'healthy' });
-  });
-
-  const app = await NestFactory.create(
-      AppModule,
-      new ExpressAdapter(server)
-  );
-
-  // CORS für alles erlauben
+  // ✅ CORS für ALLES erlauben
   app.enableCors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: [
+      'https://allhalals.vercel.app',  // Dein Frontend
+      'http://localhost:4200',          // Lokal
+      '*',                               // Backup - für Tests
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization'
+    ],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
+
+  // ✅ Health Check Route NICHT manuell erstellen!
+  // NestJS hat automatisch eine Root-Route?
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
   console.log(`✅ Backend running on port ${port}`);
-  console.log(`✅ Health check available at: http://localhost:${port}/`);
+  console.log(`✅ CORS enabled for: https://allhalals.vercel.app`);
   console.log(`✅ Frontend URL: ${process.env.FRONTEND_URL || 'Not set'}`);
+
+  // Teste ob alle Routes funktionieren
+  const server = app.getHttpServer();
+  const router = server._events.request._router;
+  console.log('\n📋 Verfügbare Routen:');
+  router.stack
+      .filter((r: any) => r.route)
+      .forEach((r: any) => {
+        console.log(`   ${Object.keys(r.route.methods)} ${r.route.path}`);
+      });
 }
 
 bootstrap().catch(err => {
