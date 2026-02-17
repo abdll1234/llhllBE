@@ -12,6 +12,7 @@ async function bootstrap() {
     origin: [
       'https://allhalals.vercel.app',
       'http://localhost:4200',
+        'https://incandescent-beignet-8e69c2.netlify.app/'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],

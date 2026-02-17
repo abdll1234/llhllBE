@@ -16,12 +16,12 @@ export class AppController {
     };
   }
 
-  @Get('health')
-  getHealth() {
-    return {
-      status: 'healthy',
-      uptime: process.uptime(),
-      timestamp: Date.now()
-    };
-  }
+@Get('health')
+getHealth() {
+  return {
+    status: 'healthy',
+    uptime: process.uptime(),
+    timestamp: Date.now()
+  };
+}
 }
