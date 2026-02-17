@@ -4,6 +4,9 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 export class QrService {
   async generateQR(url: string): Promise<Buffer> {
     try {
+      const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:4200').replace(/\/$/, '');
+      const logoUrl = `${frontendUrl}/assets/NEWLOGO.png`;
+
       const response = await fetch('https://api.qrcode-monkey.com/qr/custom', {
         method: 'POST',
         headers: {
@@ -13,17 +16,22 @@ export class QrService {
           data: url,
           config: {
             body: 'round',
-            eye: 'frame13',
-            eyeBall: 'ball14',
-            bodyColor: '#00a550',
+            eye: 'frame2',
+            eyeBall: 'ball2',
+            bodyColor: '#007437',
             bgColor: '#FFFFFF',
-            eye1Color: '#00a550',
-            eye2Color: '#00a550',
-            eye3Color: '#00a550',
+            eye1Color: '#007437',
+            eye2Color: '#007437',
+            eye3Color: '#007437',
           },
           size: 300,
           download: false,
           file: 'png',
+          // Add logo from frontend assets
+          logo: logoUrl,
+          logoBackgroundTransparent: true,
+          removeQrCodeBehindLogo: true,
+          logoMode: 'default',
         }),
       });
 
