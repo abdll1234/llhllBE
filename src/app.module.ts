@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import {seconds, ThrottlerModule} from '@nestjs/throttler';
 import {FilesModule} from "./files/files.module";
 import {InvitesModule} from "./invites/invites.module";
+import {QrModule} from "./qr/qr.module";
 import {AppController} from "./app.controller";
 
 @Module({
@@ -19,6 +20,7 @@ import {AppController} from "./app.controller";
 
     FilesModule,
     InvitesModule,
+    QrModule,
   ],
 })
 export class AppModule {}
